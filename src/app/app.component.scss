@@ -1,3 +1,11 @@
 .ios-menu {
   width: 14px;
 }
+
+.pop-up-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
