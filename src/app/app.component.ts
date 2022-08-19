@@ -9,6 +9,7 @@ import { Platform } from '@angular/cdk/platform';
 })
 export class AppComponent implements OnInit {
   title = 'test-main';
+  
   isOnline: boolean;
   modalVersion: boolean;
   modalPwaEvent: any;
