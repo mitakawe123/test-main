@@ -8,40 +8,79 @@ import { Platform } from '@angular/cdk/platform';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+  title = 'test-main';
+  isOnline: boolean;
+  modalVersion: boolean;
   modalPwaEvent: any;
+  modalPwaPlatform: string | undefined;
 
-  constructor() {}
+  constructor(private platform: Platform, private swUpdate: SwUpdate) {
+    this.isOnline = false;
+    this.modalVersion = false;
+  }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
+    this.updateOnlineStatus();
+
+    window.addEventListener('online', this.updateOnlineStatus.bind(this));
+    window.addEventListener('offline', this.updateOnlineStatus.bind(this));
+
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates.pipe(
+        filter(
+          (evt: any): evt is VersionReadyEvent => evt.type === 'VERSION_READY'
+        ),
+        map((evt: any) => {
+          console.info(
+            `currentVersion=[${evt.currentVersion} | latestVersion=[${evt.latestVersion}]`
+          );
+          this.modalVersion = true;
+        })
+      );
+    }
+
     this.loadModalPwa();
   }
 
-  private loadModalPwa(): void {
-    window.addEventListener('beforeinstallprompt', (event: any) => {
-      event.preventDefault();
-      this.modalPwaEvent = event;
-      event.userChoice.then((choiceResult: any) => {
-        console.log(choiceResult.outcome); // either "accepted" or "dismissed"
-      });
-    });
+  private updateOnlineStatus(): void {
+    this.isOnline = window.navigator.onLine;
+    console.info(`isOnline=[${this.isOnline}]`);
   }
 
-  async addToHomeScreen() {
-    // if (this.modalPwaEvent) {
-    //   this.modalPwaEvent.prompt();
-    // }
+  public updateVersion(): void {
+    this.modalVersion = false;
+    window.location.reload();
+  }
 
-    // deferredPrompt is a global variable we've been using in the sample to capture the `beforeinstallevent`
-    this.modalPwaEvent.prompt();
-    // Find out whether the user confirmed the installation or not
-    const { outcome } = await this.modalPwaEvent.userChoice;
-    // The deferredPrompt can only be used once.
-    this.modalPwaEvent = null;
-    // Act on the user's choice
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt.');
-    } else if (outcome === 'dismissed') {
-      console.log('User dismissed the install prompt');
+  public closeVersion(): void {
+    this.modalVersion = false;
+  }
+
+  private loadModalPwa(): void {
+    if (this.platform.ANDROID || this.platform.isBrowser) {
+      window.addEventListener('beforeinstallprompt', (event: any) => {
+        event.preventDefault();
+        this.modalPwaEvent = event;
+        this.modalPwaPlatform = 'ANDROID';
+      });
     }
+
+    if (this.platform.IOS && this.platform.SAFARI) {
+      const isInStandaloneMode =
+        'standalone' in window.navigator &&
+        (<any>window.navigator)['standalone'];
+      if (!isInStandaloneMode) {
+        this.modalPwaPlatform = 'IOS';
+      }
+    }
+  }
+
+  public addToHomeScreen(): void {
+    this.modalPwaEvent.prompt();
+    this.modalPwaPlatform = undefined;
+  }
+
+  public closePwa(): void {
+    this.modalPwaPlatform = undefined;
   }
 }
