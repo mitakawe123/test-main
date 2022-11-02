@@ -17,12 +17,7 @@
       (click)="closePwa()"
     ></button>
     <!-- Android -->
-    <button
-      *ngIf="modalPwaPlatform === 'ANDROID' || modalPwaPlatform === 'isBrowser'"
-      (click)="addToHomeScreen()"
-    >
-      Add this WEB app to home screen
-    </button>
+    <button (click)="addToHomeScreen()">Add this WEB app to home screen</button>
     <!-- iOS with Safari -->
     <div *ngIf="modalPwaPlatform === 'IOS'">
       To install this WEB app on your device, tap the "Menu" button
