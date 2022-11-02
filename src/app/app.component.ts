@@ -57,6 +57,7 @@ export class AppComponent implements OnInit {
   }
 
   private loadModalPwa(): void {
+    console.log(this.platform);
     if (this.platform.ANDROID || this.platform.isBrowser) {
       window.addEventListener('beforeinstallprompt', (event: any) => {
         event.preventDefault();
