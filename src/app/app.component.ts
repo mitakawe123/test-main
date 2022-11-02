@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
 
   constructor() {}
 
-  public ngOnInit(): void {
+  ngOnInit(): void {
     this.loadModalPwa();
   }
 
@@ -26,9 +26,22 @@ export class AppComponent implements OnInit {
     });
   }
 
-  public addToHomeScreen(): void {
-    if (this.modalPwaEvent) {
-      this.modalPwaEvent.prompt();
+  async addToHomeScreen() {
+    // if (this.modalPwaEvent) {
+    //   this.modalPwaEvent.prompt();
+    // }
+
+    // deferredPrompt is a global variable we've been using in the sample to capture the `beforeinstallevent`
+    this.modalPwaEvent.prompt();
+    // Find out whether the user confirmed the installation or not
+    const { outcome } = await this.modalPwaEvent.userChoice;
+    // The deferredPrompt can only be used once.
+    this.modalPwaEvent = null;
+    // Act on the user's choice
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt.');
+    } else if (outcome === 'dismissed') {
+      console.log('User dismissed the install prompt');
     }
   }
 }
