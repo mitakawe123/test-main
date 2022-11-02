@@ -9,20 +9,17 @@ import { Platform } from '@angular/cdk/platform';
 })
 export class AppComponent implements OnInit {
   modalPwaEvent: any;
-  modalPwaPlatform: string | undefined;
 
-  constructor(private platform: Platform) {}
+  constructor() {}
 
   public ngOnInit(): void {
-      this.loadModalPwa();
-    
+    this.loadModalPwa();
   }
 
   private loadModalPwa(): void {
     window.addEventListener('beforeinstallprompt', (event: any) => {
       event.preventDefault();
       this.modalPwaEvent = event;
-      this.modalPwaPlatform = 'ANDROID';
       event.userChoice.then((choiceResult: any) => {
         console.log(choiceResult.outcome); // either "accepted" or "dismissed"
       });
@@ -30,11 +27,8 @@ export class AppComponent implements OnInit {
   }
 
   public addToHomeScreen(): void {
-    this.modalPwaEvent.prompt();
-    this.modalPwaPlatform = undefined;
-  }
-
-  public closePwa(): void {
-    this.modalPwaPlatform = undefined;
+    if (this.modalPwaEvent) {
+      this.modalPwaEvent.prompt();
+    }
   }
 }
