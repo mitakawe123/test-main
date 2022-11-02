@@ -14,13 +14,11 @@ export class AppComponent implements OnInit {
   constructor(private platform: Platform) {}
 
   public ngOnInit(): void {
-    if (this.platform.ANDROID || this.platform.isBrowser) {
       this.loadModalPwa();
-    }
+    
   }
 
   private loadModalPwa(): void {
-    console.log(this.platform);
     window.addEventListener('beforeinstallprompt', (event: any) => {
       event.preventDefault();
       this.modalPwaEvent = event;
