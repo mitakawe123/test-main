@@ -20,41 +20,10 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.updateOnlineStatus();
-
-    window.addEventListener('online', this.updateOnlineStatus.bind(this));
-    window.addEventListener('offline', this.updateOnlineStatus.bind(this));
-
-    if (this.swUpdate.isEnabled) {
-      this.swUpdate.versionUpdates.pipe(
-        filter(
-          (evt: any): evt is VersionReadyEvent => evt.type === 'VERSION_READY'
-        ),
-        map((evt: any) => {
-          console.info(
-            `currentVersion=[${evt.currentVersion} | latestVersion=[${evt.latestVersion}]`
-          );
-          this.modalVersion = true;
-        })
-      );
-    }
 
     this.loadModalPwa();
   }
 
-  private updateOnlineStatus(): void {
-    this.isOnline = window.navigator.onLine;
-    console.info(`isOnline=[${this.isOnline}]`);
-  }
-
-  public updateVersion(): void {
-    this.modalVersion = false;
-    window.location.reload();
-  }
-
-  public closeVersion(): void {
-    this.modalVersion = false;
-  }
 
   private loadModalPwa(): void {
     console.log(this.platform);
