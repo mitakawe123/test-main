@@ -8,44 +8,27 @@ import { Platform } from '@angular/cdk/platform';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  title = 'test-main';
-  isOnline: boolean;
-  modalVersion: boolean;
   modalPwaEvent: any;
   modalPwaPlatform: string | undefined;
 
-  constructor(private platform: Platform, private swUpdate: SwUpdate) {
-    this.isOnline = false;
-    this.modalVersion = false;
-  }
+  constructor(private platform: Platform) {}
 
   public ngOnInit(): void {
-
-    this.loadModalPwa();
+    if (this.platform.ANDROID || this.platform.isBrowser) {
+      this.loadModalPwa();
+    }
   }
-
 
   private loadModalPwa(): void {
     console.log(this.platform);
-    if (this.platform.ANDROID || this.platform.isBrowser) {
-      window.addEventListener('beforeinstallprompt', (event: any) => {
-        event.preventDefault();
-        this.modalPwaEvent = event;
-        this.modalPwaPlatform = 'ANDROID';
-        event.userChoice.then((choiceResult: any) => {
-          console.log(choiceResult.outcome); // either "accepted" or "dismissed"
-        });
+    window.addEventListener('beforeinstallprompt', (event: any) => {
+      event.preventDefault();
+      this.modalPwaEvent = event;
+      this.modalPwaPlatform = 'ANDROID';
+      event.userChoice.then((choiceResult: any) => {
+        console.log(choiceResult.outcome); // either "accepted" or "dismissed"
       });
-    }
-
-    if (this.platform.IOS && this.platform.SAFARI) {
-      const isInStandaloneMode =
-        'standalone' in window.navigator &&
-        (<any>window.navigator)['standalone'];
-      if (!isInStandaloneMode) {
-        this.modalPwaPlatform = 'IOS';
-      }
-    }
+    });
   }
 
   public addToHomeScreen(): void {
